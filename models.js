@@ -6,8 +6,8 @@ const blogPostSchema = mongoose.Schema({
     lastName: String
   },
   title: {type: String, required: true},
-  content: {type: String},
-  created: {type: Date, default: Date.now}
+  content: {type: String}
+  // created: {type: Date, default: Date.now}
 });
 
 
@@ -20,8 +20,8 @@ blogPostSchema.methods.apiRepr = function() {
     // id: this._id,
     author: this.authorName,
     content: this.content,
-    title: this.title,
-    created: this.created
+    title: this.title
+    // created: this.created
   };
 }
 
