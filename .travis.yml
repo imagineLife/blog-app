@@ -2,3 +2,10 @@ language: node_js
 node_js: node
 services:
 - mongodb
+deploy:
+  provider: heroku
+  api_key:
+    secure: i1LlnTA+XNYV+OZ6UNJwzS4j+XkkDlR0NLFrgJYpqjnq1OxOBIyutjcahLcoJcfTsN5zgnmkFz/72rG4hC0rafYMhbuzzfqfOWWUbAUdxdnJTe+a8F4l6BAzIHR8Z4PnqzwCy7jedR8R53p9OtZOY6bQqfwlSYTfIoBOjORrjz2FQgd/tGkYs3Y3VSI5sqQXogD2Lff0muocgXvTpQDtmjh/PC3hEyvNroCAJk2ZkDINYoiFu4j7di+yX/noVH0RPW5UsJYjw0u6qrOFQKUIxHLDW+VdzbshFSLfs36vPuCKGgRSjX2yUYlAOEHTKK0InJjDBuo8r0OCTJmVIlRKv5lE0RaJuMVNjn4Bqj62rHmKxLomfAbYguK2VzvD6Nf30CqEYz1nBIDHdcdyvdTzu3d+Q92M3iXm/woUvvnLW4mcV9jz6tzV76LuCHBL1WudpPeLtXRK1QWtje/g0X/UuFFYbJ+HXtc7VnZg4SIU+SPx2OId4A5zuwZe3fGqd1DvQnG0WRY3nBXerBkS+E9rkKpQUY1q4kh0vquC/sjbwr4UYqcRiRGs0/zLQZytYPYO8L2mvjeS3/NW6EWlnQ/5xFEgdxTo+BqfpW8ou+kJUgFn6wuPkxf2fDKts0bCyPn5zJJ6zfqoubOdsClEh3WXTv6sWax9XcUT6NMFLJRlNLc=
+  app: warm-ravine-88411
+  on:
+    repo: imagineLife/blog-app-mongoose-challenge-solution
