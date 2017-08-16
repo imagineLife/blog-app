@@ -96,7 +96,6 @@ describe('BlogPosts API resource', function() {
           // so subsequent .then blocks can access resp obj.
           res = _res;
           res.should.have.status(200);
-          // otherwise our db seeding didn't work
           res.body.should.have.length.of.at.least(1);
           return BlogPost.count();
         })
@@ -112,7 +111,7 @@ describe('BlogPosts API resource', function() {
       let resPost;
       return chai.request(app)
         .get('/posts')
-        .then(function(res) {
+        .then(res => {
 
           res.should.have.status(200);
           res.should.be.json;
@@ -120,23 +119,29 @@ describe('BlogPosts API resource', function() {
           res.body.should.have.length.of.at.least(1);
 
           res.body.forEach(function(post) {
-          console.log('*****\n',
-            'POST CONTENT IS\n',
-            post,
-            '\n*****');
+          // console.log('*****\n',
+          //   'POST CONTENT IS\n',
+          //   post,
+          //   '\n*****');
             post.should.be.a('object');
             post.should.include.keys('title', 'content', 'author');
           });
           // just check one of the posts that its values match with those in db
           // and we'll assume it's true for rest
           resPost = res.body[0];
-          return BlogPost.findById(resPost.id).exec();
+          
+          // console.log('*****\n',
+          //   'post CONTENT IS\n\n',
+          //   resPost,
+          //   '\n\n*****');
+
+          return BlogPost.findById(resPost.id);
         })
         .then(post => {
           // console.log('*****\n',
-          //   'POST CONTENT IS\n',
+          //   'post CONTENT IS\n\n',
           //   post,
-          //   '\n*****');
+          //   '\n\n*****');
           resPost.title.should.equal(post.title);
           resPost.content.should.equal(post.content);
           resPost.author.should.equal(post.authorName);
@@ -144,109 +149,107 @@ describe('BlogPosts API resource', function() {
     });
   });
 
-  // describe('POST endpoint', function() {
-  //   // strategy: make a POST request with data,
-  //   // then prove that the BlogPost we get back has
-  //   // right keys, and that `id` is there (which means
-  //   // the data was inserted into db)
-  //   it('should add a new BlogPost', function() {
+  describe('POST endpoint', function() {
+    // strategy: make a POST request with data,
+    // then prove that the BlogPost we get back has
+    // right keys, and that `id` is there (which means
+    // the data was inserted into db)
+    it('should add a new BlogPost', function() {
 
-  //     const newBlogPost = generateBlogPostData();
+      const newBlogPost = generateBlogPostData();
 
-  //     return chai.request(app)
-  //       .post('/posts')
-  //       .send(newBlogPost)
-  //       .then(function(res) {
-  //         res.should.have.status(201);
-  //         res.should.be.json;
-  //         res.body.should.be.a('object');
-  //         res.body.should.include.keys(
-  //           'title', 'author', 'content');
-  //         res.body.title.should.equal(newBlogPost.title);
-  //         // cause Mongo should have created id on insertion
-  //         res.body.id.should.not.be.null;
-  //         res.body.author.should.equal(
-  //           `${newBlogPost.author.firstName} ${newBlogPost.author.lastName}`);
-  //         res.body.content.should.equal(newBlogPost.content);
+      return chai.request(app)
+        .post('/posts')
+        .send(newBlogPost)
+        .then(function(res) {
+          res.should.have.status(201);
+          res.should.be.json;
+          res.body.should.be.a('object');
+          res.body.should.include.keys(
+            'title', 'author', 'content');
+          res.body.title.should.equal(newBlogPost.title);
+          // cause Mongo should have created id on insertion
+          res.body.id.should.not.be.null;
+          res.body.author.should.equal(
+            `${newBlogPost.author.firstName} ${newBlogPost.author.lastName}`);
+          res.body.content.should.equal(newBlogPost.content);
 
-  //         return BlogPost.findById(res.body.id);
-  //       })
-  //       .then(function(blogpost) {
-  //         console.log('blogpost is . . .', blogpost.author.firstName);
-  //         console.log('NEWBLOGPOST is . . .', newBlogPost.author.firstName,newBlogPost.author.lastName);
-  //         blogpost.title.should.equal(newBlogPost.title);
-  //         blogpost.author.firstName.should.equal(`${newBlogPost.author.firstName}`);
-  //         blogpost.author.lastName.should.equal(`${newBlogPost.author.lastName}`);
-  //         blogpost.content.should.equal(newBlogPost.content);
-  //       });
-  //   });
-  // });
+          return BlogPost.findById(res.body.id);
+        })
+        .then(function(blogpost) {
+          const representedPost = blogpost.apiRepr();
+          representedPost.title.should.equal(newBlogPost.title);
+          representedPost.author.should.equal(`${newBlogPost.author.firstName} ${newBlogPost.author.lastName}`);
+          representedPost.content.should.equal(newBlogPost.content);
+        });
+    });
+  });
 
-  // describe('PUT endpoint', function() {
+  describe('PUT endpoint', function() {
 
-  //   // strategy:
-  //   //  1. Get an existing BlogPost from db
-  //   //  2. Make a PUT request to update that BlogPost
-  //   //  3. Prove BlogPost returned by request contains data we sent
-  //   //  4. Prove BlogPost in db is correctly updated
-  //   it('should update fields you send over', function() {
-  //     const updateData = {
-  //       title: 'fofofofofofofof',
-  //       content: 'futuristic fusion'
-  //     };
+    // strategy:
+    //  1. Get an existing BlogPost from db
+    //  2. Make a PUT request to update that BlogPost
+    //  3. Prove BlogPost returned by request contains data we sent
+    //  4. Prove BlogPost in db is correctly updated
+    it('should update fields you send over', function() {
+      const updateData = {
+        title: 'fofofofofofofof',
+        content: 'futuristic fusion'
+      };
 
-  //     return BlogPost
-  //       .findOne()
-  //       .exec()
-  //       .then(function(blogpost) {
-  //         updateData.id = blogpost.id;
+      return BlogPost
+        .findOne()
+        .exec()
+        .then(function(blogpost) {
+          updateData.id = blogpost.id;
 
-  //         // make request then inspect it to make sure it reflects
-  //         // data we sent
-  //         return chai.request(app)
-  //           .put(`/posts/${blogpost.id}`)
-  //           .send(updateData);
-  //       })
-  //       .then(function(res) {
-  //         res.should.have.status(201);
+          // make request then inspect it to make sure it reflects
+          // data we sent
+          return chai.request(app)
+            .put(`/posts/${blogpost.id}`)
+            .send(updateData);
+        })
+        .then(function(res) {
+          res.should.have.status(201);
 
-  //         return BlogPost.findById(updateData.id).exec();
-  //       })
-  //       .then(function(blogpost) {
-  //         blogpost.title.should.equal(updateData.title);
-  //         blogpost.content.should.equal(updateData.content);
-  //       });
-  //     });
-  // });
+          return BlogPost.findById(updateData.id).exec();
+        })
+        .then(function(blogpost) {
+          blogpost.title.should.equal(updateData.title);
+          blogpost.content.should.equal(updateData.content);
+        });
+      });
+  });
 
-  // describe('DELETE endpoint', function() {
-  //   // strategy:
-  //   //  1. get a BlogPost
-  //   //  2. make a DELETE request for that BlogPost's id
-  //   //  3. assert that response has right status code
-  //   //  4. prove that BlogPost with the id doesn't exist in db anymore
-  //   it('delete a blog-post by id', function() {
+  describe('DELETE endpoint', function() {
+    // strategy:
+    //  1. get a BlogPost
+    //  2. make a DELETE request for that BlogPost's id
+    //  3. assert that response has right status code
+    //  4. prove that BlogPost with the id doesn't exist in db anymore
+    it('delete a blog-post by id', function() {
 
-  //     let blogpost;
+      let blogpost;
 
-  //     return BlogPost
-  //       .findOne()
-  //       .exec()
-  //       .then(function(_blogpost) {
-  //         blogpost = _blogpost;
-  //         return chai.request(app).delete(`/posts/${blogpost.id}`);
-  //       })
-  //       .then(function(res) {
-  //         res.should.have.status(204);
-  //         return BlogPost.findById(blogpost.id).exec();
-  //       })
-  //       .then(function(_blogpost) {
-  //         // when a variable's value is null, chaining `should`
-  //         // doesn't work. so `_blogpost.should.be.null` would raise
-  //         // an error. `should.be.null(_blogpost)` is how we can
-  //         // make assertions about a null value.
-  //         should.not.exist(_blogpost);
-  //       });
-  //   });
-  // });
+      return BlogPost
+        .findOne()
+        .exec()
+        .then(function(_blogpost) {
+          blogpost = _blogpost;
+          return chai.request(app).delete(`/posts/${blogpost.id}`);
+        })
+        .then(function(res) {
+          res.should.have.status(204);
+          return BlogPost.findById(blogpost.id).exec();
+        })
+        .then(function(_blogpost) {
+          // when a variable's value is null, chaining `should`
+          // doesn't work. so `_blogpost.should.be.null` would raise
+          // an error. `should.be.null(_blogpost)` is how we can
+          // make assertions about a null value.
+          should.not.exist(_blogpost);
+        });
+    });
+  });
 });
