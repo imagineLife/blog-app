@@ -20,7 +20,6 @@ blogPostSchema.methods.apiRepr = function() {
     author: this.authorName,
     content: this.content,
     title: this.title
-    // created: this.created
   };
 }
 
